@@ -1,5 +1,5 @@
 //
-//  Tab1ViewController.swift
+//  Tab4ViewController.swift
 //  expresate
 //
 //  Created by masaki on 2020/12/13.
@@ -7,12 +7,13 @@
 
 import UIKit
 
-class Tab1ViewController: UIViewController {
+class Tab4ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "home"
-        view.backgroundColor = .orange
+        self.title = "Alertas"
+        view.backgroundColor = .purple
+        
     }
     
 

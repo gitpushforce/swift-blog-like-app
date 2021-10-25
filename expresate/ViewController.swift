@@ -38,18 +38,22 @@ class ViewController: UIViewController {
         let vc1 = UINavigationController(rootViewController: Tab1ViewController())
         let vc2 = UINavigationController(rootViewController: Tab2ViewController())
         let vc3 = UINavigationController(rootViewController: Tab3ViewController())
+        let vc4 = UINavigationController(rootViewController: Tab4ViewController())
+        let vc5 = UINavigationController(rootViewController: Tab5ViewController())
         
-        vc1.title = "home"
-        vc2.title = "contact"
-        vc3.title = "settings"
+        vc1.title = "Inicio"
+        vc2.title = "Buscar"
+        vc3.title = "Postear"
+        vc4.title = "Alertas"
+        vc5.title = "Ajustes"
         
-        tabBarVC.setViewControllers([vc1, vc2, vc3], animated: false)
+        tabBarVC.setViewControllers([vc1, vc2, vc3, vc4, vc5], animated: false)
         
         guard let items = tabBarVC.tabBar.items else {
             return
         }
         
-        let images = ["house", "person.circle", "gear"]
+        let images = ["house", "magnifyingglass", "square.and.pencil", "bell", "gear"]
         
         for x in 0..<items.count {
             items[x].image = UIImage(systemName: images[x])

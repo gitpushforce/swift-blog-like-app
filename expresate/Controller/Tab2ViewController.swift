@@ -11,7 +11,7 @@ class Tab2ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "contact"
+        self.title = "Buscar"
         view.backgroundColor = .lightGray
         
         // removes badge when tapping this tab
