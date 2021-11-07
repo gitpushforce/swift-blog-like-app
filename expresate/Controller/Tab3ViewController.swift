@@ -10,7 +10,18 @@ import CropViewController
 
 class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextViewDelegate {
     
+    var selectedRange : NSRange!
+    
+    let maxBody = 12000
+    let maxTitle = 70
+    
+    var isBold : Bool = false
+    var boldImage = "boldUnselected"
+    
     var currentNumTitleLines = 1.0
+    var numberOfCharsTyped = 0
+    
+    var toolBarIcons : [String] = []
     
     let scroll : UIScrollView = {
         let scroll = UIScrollView()
@@ -31,12 +42,12 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
         return view1
     }()
     
-    lazy var view2 : UIView = {
-        var view2 = UIView()
-        view2.translatesAutoresizingMaskIntoConstraints = false
-        view2.backgroundColor = UIColor(cgColor: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
-        return view2
-    }()
+//    lazy var view2 : UIView = {
+//        var view2 = UIView()
+//        view2.translatesAutoresizingMaskIntoConstraints = false
+//        view2.backgroundColor = UIColor(cgColor: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
+//        return view2
+//    }()
     
 //    lazy var view2_2 : UIView = {
 //        var view2_2 = UIView()
@@ -45,17 +56,26 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
 //        return view2_2
 //    }()
     
-    let view3 : UIView = {
-        let view3 = UIView()
-        view3.translatesAutoresizingMaskIntoConstraints = false
-        view3.backgroundColor = UIColor(cgColor: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
-        return view3
-    }()
+//    let view3 : UIView = {
+//        let view3 = UIView()
+//        view3.translatesAutoresizingMaskIntoConstraints = false
+//        view3.backgroundColor = UIColor(cgColor: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
+//        return view3
+//    }()
     
     let imageView : UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
+    }()
+    
+    let bottomBar : UIView = {
+        let bottomBar = UIView()
+        bottomBar.translatesAutoresizingMaskIntoConstraints = false
+        bottomBar.backgroundColor = UIColor(cgColor: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
+        bottomBar.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        bottomBar.backgroundColor = .brown
+        return bottomBar
     }()
     
     let noImage : UIImage = UIImage(systemName: "photo")!
@@ -74,15 +94,16 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
     lazy var tituloTextView : UITextView = {
         var textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.sizeToFit()
+        textView.isScrollEnabled = false
         textView.textContainer.maximumNumberOfLines = 4
         textView.textContainer.lineBreakMode = .byTruncatingTail
         textView.backgroundColor = UIColor(cgColor: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
         textView.tag = 50
-        textView.backgroundColor = .red
         return textView
     }()
     
-    let desarrolloView : UITextView = {
+    let desarrolloTextView : UITextView = {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.textContainer.lineBreakMode = .byTruncatingTail
@@ -91,16 +112,38 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
         textView.tag = 51
         return textView
     }()
-    var numLetrasCont: String = "0/1000"
-    var numLetrasTitulo: String = "0/70"
+    
+    override func viewDidAppear(_ animated: Bool) {
+       var newSafeArea = UIEdgeInsets()
+       // Adjust the safe area to accommodate
+       //  the width of the side view.
+//       if let sideViewWidth = sideView?.bounds.size.width {
+//          newSafeArea.right += sideViewWidth
+//       }
+       // Adjust the safe area to accommodate
+       //  the height of the bottom view.
+      // if let bottomViewHeight = view3.bounds.size.height {
+     //     newSafeArea.bottom += bottomViewHeight
+    //   }
+       // Adjust the safe area insets of the
+       //  embedded child view controller.
+    //   let child = self.childViewControllers[0]
+     //s  child.additionalSafeAreaInsets = newSafeArea
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Postear"
         
+        toolBarIcons = ["boldSelected", "toolbarHeader", "keyboard"]
         viewConstraints()
+//        let selectedRange = self.composeTextView.selectedTextRange
+//        let selectedText : String = composeTextView.textInRange(selectedRange!)!
+//        if(selectedText != "") { callAction() }
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        //selectedRange = desarrolloTextView.selectedRange
         
         tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
         imageView.image = noImage
@@ -108,90 +151,152 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
         imageView.addGestureRecognizer(tap!)
         imageView.isUserInteractionEnabled = true
         
+        
+        tituloTextView.delegate = self
+        desarrolloTextView.delegate = self
         // titulo textView
-        view2.addSubview(tituloTextView)
+    //    view2.addSubview(tituloTextView)
         //view2_2.addSubview(tituloTextView)
         // contenido textView
-        view3.addSubview(desarrolloView)
         
-        tituloTextView.topAnchor.constraint(equalTo: view2.topAnchor, constant: 0).isActive = true
-        tituloTextView.bottomAnchor.constraint(equalTo: view2.bottomAnchor, constant: 0).isActive = true
-        tituloTextView.leadingAnchor.constraint(equalTo: view2.leadingAnchor, constant: 0).isActive = true
-        tituloTextView.trailingAnchor.constraint(equalTo: view2.trailingAnchor, constant: 0).isActive = true
-        tituloTextView.font = UIFont(name: "Arial", size: view.frame.height * constanteTituloFont)
-        tituloTextView.addDoneButtonWithCounter(title: "Listo", numLetras: numLetrasTitulo, target: self, selector: #selector(tapDone(sender:)))
-        tituloTextView.textColor = UIColor.init(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.30)
-        tituloTextView.text = "Escribe el Título aquí..."
-        tituloTextView.delegate = self
         
-        desarrolloView.topAnchor.constraint(equalTo: view3.topAnchor, constant: 0).isActive = true
-        desarrolloView.bottomAnchor.constraint(equalTo: view3.bottomAnchor, constant: 0).isActive = true
-        desarrolloView.leadingAnchor.constraint(equalTo: view3.leadingAnchor, constant: 0).isActive = true
-        desarrolloView.trailingAnchor.constraint(equalTo: view3.trailingAnchor, constant: 0).isActive = true
-        desarrolloView.font = UIFont(name: "Arial", size: view.frame.height * constanteContenidoFont)
-        desarrolloView.addDoneButtonWithCounter(title: "Listo", numLetras: numLetrasCont, target: self, selector: #selector(tapDone(sender:)))
-        desarrolloView.delegate = self
+        
+        
+        
+        //self.addToolBar(textField: desarrolloTextView, toolbar: keyBoardToolBar.getMarkdownToolbar())
         
     }
+    
+//    func addToolBar(textField: UITextView, toolbar: UIToolbar) {
+//        let scrollFrame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: toolbar.frame.height)
+//        let scroll = UIScrollView(frame: scrollFrame)
+//        scroll.showsHorizontalScrollIndicator = false
+//        scroll.contentSize = CGSize(width: toolbar.frame.width, height: toolbar.frame.height)
+//        scroll.addSubview(toolbar)
+//
+//        let topBorder = CALayer()
+//        topBorder.frame = CGRect(x: -1000, y: 0, width: 9999, height: 1)
+//        scroll.layer.addSublayer(topBorder)
+//
+//        let isFirst = textField.isFirstResponder
+//        if isFirst {
+//            textField.endEditing(true)
+//        }
+//
+//        let inputAccView = UIInputView(frame: scrollFrame, inputViewStyle: .keyboard)
+//        inputAccView.addSubview(scroll)
+//        textField.inputAccessoryView = scroll
+//
+//        if isFirst {
+//            textField.becomeFirstResponder()
+//        }
+//    }
+    
     
     @objc func tapDone(sender: Any) {
         self.view.endEditing(true)
     }
     
+    @objc func boldPressed(sender: Any) {
+        
+        let string = NSMutableAttributedString(attributedString: desarrolloTextView.attributedText)
+        //let attributes = [NSAttributedString.Key.foregroundColor: UIColor.red]
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: view.frame.height * 0.027)]
+        string.addAttributes(attributes, range: desarrolloTextView.selectedRange)
+        
+        if (isBold) {
+            isBold = false
+            boldImage = "boldUnselected"
+        } else {
+            boldImage = "boldSelected"
+            isBold = true
+            desarrolloTextView.attributedText = string
+            desarrolloTextView.selectedRange = self.selectedRange
+        }
+        
+        
+
+
+        
+        toolBarIcons = [boldImage, "toolbarHeader", "keyboard"] 
+        desarrolloTextView.addDoneButtonWithCounterBody(numLetras: "\(numberOfCharsTyped)/\(maxBody)", target: self, boldButtonStatus: false, boldAction: #selector(boldPressed(sender:)), keyboardClose:  #selector(tapDone(sender:)), iconStrings: toolBarIcons)
+        desarrolloTextView.reloadInputViews()
+        print(isBold)
+        
+    }
     
     func viewConstraints () {
-        
         view.addSubview(scroll)
         scroll.addSubview(content)
         content.addSubview(view1)
-        content.addSubview(view2)
-        content.addSubview(view3)
+        content.addSubview(tituloTextView)
+        //view3.addSubview(desarrolloTextView)
+        content.addSubview(desarrolloTextView)
+        view.addSubview(bottomBar)
+        view.backgroundColor = .white
         
         view1.addSubview(imageView)
         
-        
         scroll.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        // scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        //scroll.backgroundColor = .green
         
         content.topAnchor.constraint(equalTo: scroll.topAnchor, constant: 0).isActive = true
         content.bottomAnchor.constraint(equalTo: scroll.bottomAnchor, constant: 0).isActive = true
         content.leadingAnchor.constraint(equalTo: scroll.leadingAnchor, constant: 0).isActive = true
         content.trailingAnchor.constraint(equalTo: scroll.trailingAnchor, constant: 0).isActive = true
-        content.heightAnchor.constraint(equalToConstant: 2000).isActive = true
+        //content.heightAnchor.constraint(equalToConstant: newSafeArea)
+        //content.heightAnchor.constraint(equalToConstant: 2000).isActive = true
         content.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0).isActive = true
+        //content.backgroundColor = .gray
         
         view1.topAnchor.constraint(equalTo: content.safeAreaLayoutGuide.topAnchor , constant: 0).isActive = true
         view1.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 0).isActive = true
         view1.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: 0).isActive = true
         
-        view2.topAnchor.constraint(equalTo: view1.bottomAnchor, constant: 0).isActive = true
-        view2.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 0).isActive = true
-        view2.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: 0).isActive = true
-        view2.layer.borderWidth = 1.0
-        view2.layer.borderColor = UIColor.lightGray.cgColor
+        tituloTextView.topAnchor.constraint(equalTo: view1.bottomAnchor, constant: 0).isActive = true
+        tituloTextView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 0).isActive = true
+        tituloTextView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: 0).isActive = true
+        tituloTextView.layer.borderWidth = 1.0
+        tituloTextView.font = UIFont(name: "Arial", size: view.frame.height * constanteTituloFont)
+        tituloTextView.addDoneButtonWithCounter(numLetras: "0/\(maxTitle)", target: self, selector: #selector(tapDone(sender:)))
+        tituloTextView.textColor = UIColor.init(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.30)
+        tituloTextView.text = "Escribe el Título aquí..."
+        tituloTextView.backgroundColor = .cyan
         
+//        view3.topAnchor.constraint(equalTo: tituloTextView.bottomAnchor, constant: 0).isActive = true
+//        view3.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 0).isActive = true
+//        view3.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: 0).isActive = true
         
-        view3.topAnchor.constraint(equalTo: view2.bottomAnchor, constant: 0).isActive = true
-        view3.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 0).isActive = true
-        view3.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: 0).isActive = true
-        withoutKeyboard = view3.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: 0)
+        desarrolloTextView.topAnchor.constraint(equalTo: tituloTextView.bottomAnchor, constant: 0).isActive = true
+        //desarrolloTextView.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: 0).isActive = true
+        desarrolloTextView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 0).isActive = true
+        desarrolloTextView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: 0).isActive = true
+        desarrolloTextView.font = UIFont(name: "Arial", size: view.frame.height * constanteContenidoFont)
+        desarrolloTextView.backgroundColor = .yellow
+        desarrolloTextView.addDoneButtonWithCounterBody(numLetras: "0/\(maxBody)", target: self, boldButtonStatus: false, boldAction: #selector(boldPressed(sender:)), keyboardClose:  #selector(tapDone(sender:)), iconStrings: toolBarIcons)
+        desarrolloTextView.heightAnchor.constraint(equalToConstant: 500).isActive = true
+        
+        bottomBar.topAnchor.constraint(equalTo: scroll.bottomAnchor, constant: 0).isActive = true
+        bottomBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        bottomBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        bottomBar.backgroundColor = .red
+        
+        withoutKeyboard = desarrolloTextView.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: 0)
         withoutKeyboard!.isActive = true
         
         // medidas de los heights de los views
         constraintWithoutImage = view1.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2)
         constraintWithoutImage!.isActive = true
-        //view2.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15).isActive = true
-        view2.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.05 * currentNumTitleLines).isActive = true
-
         
         // imageView
         imageView.topAnchor.constraint(equalTo: view1.topAnchor, constant: 0).isActive = true
         imageView.bottomAnchor.constraint(equalTo: view1.bottomAnchor, constant: 0).isActive = true
         imageView.leadingAnchor.constraint(equalTo: view1.leadingAnchor, constant: 0).isActive = true
         imageView.trailingAnchor.constraint(equalTo: view1.trailingAnchor, constant: 0).isActive = true
-        
     }
     
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
@@ -233,7 +338,6 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
       present(cropViewController, animated: true, completion: nil)
     }
     
-
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
         
         constraintWithoutImage?.isActive = false
@@ -250,7 +354,6 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
         let height = view1.frame.width / ratio
         constraintWithImage = view1.heightAnchor.constraint(equalToConstant: height)
         constraintWithImage?.isActive = true
-        
         
         // removiendo el floating button (hay q remover, pq al cambiar foto sin borrarla primero anyadiria otro floating sobre el otro)
         let floatingButtonWithTag = view1.viewWithTag(100)
@@ -278,9 +381,6 @@ class Tab3ViewController: UIViewController, CropViewControllerDelegate, UITextVi
             }
         }
     }
-    
-    
-    
 }
 
 extension Tab3ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -331,43 +431,72 @@ extension Tab3ViewController: UIImagePickerControllerDelegate, UINavigationContr
         if (textView.tag == 50) {
             let newText = (tituloTextView.text as NSString).replacingCharacters(in: range, with: text)
             let numberOfChars = newText.count
-            numLetrasTitulo = "\(numberOfChars)/70"
-            //tituloView.reloadInputViews()
-            tituloTextView.addDoneButtonWithCounter(title: "Listo", numLetras: numLetrasTitulo, target: self, selector: #selector(tapDone(sender:)))
+            tituloTextView.addDoneButtonWithCounter(numLetras: "\(numberOfChars)/\(maxTitle)", target: self, selector: #selector(tapDone(sender:)))
             tituloTextView.reloadInputViews()
-            print("\(numberOfChars)/70")
+            print("\(numberOfChars)/\(maxTitle)")
             let currentNumLines = Int(tituloTextView.contentSize.height / tituloTextView.font!.lineHeight)
             currentNumTitleLines = CGFloat (currentNumLines)
             print (currentNumTitleLines)
            
-            /******************************************  TODO ******************************************/
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.layoutIfNeeded()
             }, completion: nil)
             
-            //view2.heightConstraint?.constant = currentNumTitleLines * 0.05
-            //print (view2.heightConstraint?.constant ?? 0)
+    
             
-            //self.view2.layoutIfNeeded()
-            //view2.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15).isActive = true
-            //viewConstraints()
-
-                //view2.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15)
-            
-            return numberOfChars < 70    // 70 Limit Value
+            return numberOfChars < maxTitle    // Limit Value
         
             
         // escritura de cuerpo
         }  else if(textView.tag == 51) {
-                let newText = (desarrolloView.text as NSString).replacingCharacters(in: range, with: text)
-                let numberOfChars = newText.count
-                numLetrasCont = "\(numberOfChars)/1000"
-                desarrolloView.addDoneButtonWithCounter(title: "Listo", numLetras: numLetrasCont, target: self, selector: #selector(tapDone(sender:)))
-                desarrolloView.reloadInputViews()
-                return numberOfChars < 1000    // 1000 Limit Value
+                let newText = (desarrolloTextView.text as NSString).replacingCharacters(in: range, with: text)
+                
+            //  change attributes to selected range START
+            selectedRange = textView.selectedRange
+            print("range: \(textView.selectedRange)")
+            
+            
+            // ******************TODO *************************
+            let string = NSMutableAttributedString(attributedString: textView.attributedText)
+            
+            if (isBold) {
+                let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: view.frame.height * 0.027)]
+                string.addAttributes(attributes, range: textView.selectedRange)
+                textView.attributedText = string
+                textView.selectedRange = self.selectedRange
+            }
+//            let string = NSMutableAttributedString(attributedString:
+//            textView.attributedText)
+//            let attributes = [NSAttributedString.Key.foregroundColor: UIColor.red]
+//               string.addAttributes(attributes, range: textView.selectedRange)
+//            textView.attributedText = string
+//            textView.selectedRange = self.selectedRange
+            // change attributes to selected range END
+            
+            // ******************TODO END *************************
+            
+//            numberOfCharsTyped = newText.count
+//                desarrolloTextView.addDoneButtonWithCounterBody(numLetras: "\(numberOfCharsTyped)/\(maxBody)", target: self,  boldButtonStatus: false, boldAction: #selector(boldPressed(sender:)), keyboardClose:  #selector(tapDone(sender:)), iconStrings: toolBarIcons)
+//                desarrolloTextView.reloadInputViews()
+                return numberOfCharsTyped < maxBody    // max letters value
         } else {
             return false
         }
+    }
+    
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        
+        if let textRange = textView.selectedTextRange {
+            desarrolloTextView.addDoneButtonWithCounterBody(numLetras: "\(numberOfCharsTyped)/\(maxBody)", target: self, boldButtonStatus: true, boldAction: #selector(boldPressed(sender:)), keyboardClose:  #selector(tapDone(sender:)), iconStrings: toolBarIcons)
+            
+            let selectedText = textView.text(in: textRange)
+            let bold = textView.typingAttributes
+            print (bold)
+            // ...
+        } else {
+            desarrolloTextView.addDoneButtonWithCounterBody(numLetras: "\(numberOfCharsTyped)/\(maxBody)", target: self, boldButtonStatus: false, boldAction: #selector(boldPressed(sender:)), keyboardClose:  #selector(tapDone(sender:)), iconStrings: toolBarIcons)
+        }
+        desarrolloTextView.reloadInputViews()
     }
 
 }

@@ -24,6 +24,8 @@
 		96E562622585E4910091FCF4 /* Tab4ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E562612585E4910091FCF4 /* Tab4ViewController.swift */; };
 		96E562672585E4A20091FCF4 /* Tab5ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E562662585E4A20091FCF4 /* Tab5ViewController.swift */; };
 		96E639EF259700A6001EBCA1 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E639EE259700A6001EBCA1 /* UITextViewExtension.swift */; };
+		96EF5DC2272E9FB200478A6A /* KeyBoardToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EF5DC1272E9FB200478A6A /* KeyBoardToolBar.swift */; };
+		96EF5DC4272EA1F900478A6A /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EF5DC3272EA1F900478A6A /* UIImageExtension.swift */; };
 		A12108D3EF245A90B71F1C3E /* Pods_expresate_expresateUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C11114E5BD2BBC3456B164 /* Pods_expresate_expresateUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -72,6 +74,8 @@
 		96E562612585E4910091FCF4 /* Tab4ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tab4ViewController.swift; sourceTree = "<group>"; };
 		96E562662585E4A20091FCF4 /* Tab5ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tab5ViewController.swift; sourceTree = "<group>"; };
 		96E639EE259700A6001EBCA1 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
+		96EF5DC1272E9FB200478A6A /* KeyBoardToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardToolBar.swift; sourceTree = "<group>"; };
+		96EF5DC3272EA1F900478A6A /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		A9AE1D69403CF9893B2633CA /* Pods_expresate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_expresate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFB55FE4B85A2617E30FF227 /* Pods-expresate-expresateUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-expresate-expresateUITests.release.xcconfig"; path = "Target Support Files/Pods-expresate-expresateUITests/Pods-expresate-expresateUITests.release.xcconfig"; sourceTree = "<group>"; };
 		DE008F83E0E63DEB6F487FA5 /* Pods-expresate-expresateUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-expresate-expresateUITests.debug.xcconfig"; path = "Target Support Files/Pods-expresate-expresateUITests/Pods-expresate-expresateUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -140,6 +144,7 @@
 		96E5620D25856F6D0091FCF4 /* expresate */ = {
 			isa = PBXGroup;
 			children = (
+				96EF5DC0272E9E7C00478A6A /* Tools */,
 				96E639ED2597006D001EBCA1 /* extensions */,
 				96E5624125857A280091FCF4 /* Controller */,
 				96E5620E25856F6D0091FCF4 /* AppDelegate.swift */,
@@ -188,8 +193,17 @@
 			children = (
 				96E639EE259700A6001EBCA1 /* UITextViewExtension.swift */,
 				96D6D7F82725245B00758559 /* UIViewExtension.swift */,
+				96EF5DC3272EA1F900478A6A /* UIImageExtension.swift */,
 			);
 			path = extensions;
+			sourceTree = "<group>";
+		};
+		96EF5DC0272E9E7C00478A6A /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				96EF5DC1272E9FB200478A6A /* KeyBoardToolBar.swift */,
+			);
+			path = Tools;
 			sourceTree = "<group>";
 		};
 		CDB288BDE4C2EC518DD21523 /* Pods */ = {
@@ -448,11 +462,13 @@
 				96E5625D2585988B0091FCF4 /* Tab3ViewController.swift in Sources */,
 				96E5621325856F6D0091FCF4 /* ViewController.swift in Sources */,
 				96E5620F25856F6D0091FCF4 /* AppDelegate.swift in Sources */,
+				96EF5DC2272E9FB200478A6A /* KeyBoardToolBar.swift in Sources */,
 				96E56253258598690091FCF4 /* Tab1ViewController.swift in Sources */,
 				96E56258258598780091FCF4 /* Tab2ViewController.swift in Sources */,
 				96E639EF259700A6001EBCA1 /* UITextViewExtension.swift in Sources */,
 				96E562672585E4A20091FCF4 /* Tab5ViewController.swift in Sources */,
 				96E5621125856F6D0091FCF4 /* SceneDelegate.swift in Sources */,
+				96EF5DC4272EA1F900478A6A /* UIImageExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
