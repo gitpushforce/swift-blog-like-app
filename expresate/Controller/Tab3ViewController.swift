@@ -449,8 +449,9 @@ extension Tab3ViewController: UIImagePickerControllerDelegate, UINavigationContr
             
         // escritura de cuerpo
         }  else if(textView.tag == 51) {
-                let newText = (desarrolloTextView.text as NSString).replacingCharacters(in: range, with: text)
-                
+            let newText = (desarrolloTextView.text as NSString).replacingCharacters(in: range, with: text)
+            let numberOfChars = newText.count
+            numberOfCharsTyped = numberOfChars
             //  change attributes to selected range START
             selectedRange = textView.selectedRange
             print("range: \(textView.selectedRange)")
